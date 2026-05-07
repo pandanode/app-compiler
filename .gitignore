@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+evaluation/results.json
+debug_job.py
+test_run.py
+test_gemini.py
+test_speed.py
+list_models.py
+setup_files.py
