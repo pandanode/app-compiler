@@ -1,0 +1,72 @@
+[
+  {
+    "prompt": "Build a CRM with login, contacts, dashboard, role-based access, and payments.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 0,
+    "time_s": 151.3
+  },
+  {
+    "prompt": "Create a todo app with user accounts and task categories.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 0,
+    "time_s": 177.2
+  },
+  {
+    "prompt": "Build a blog platform with posts, comments, and admin moderation.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 2,
+    "time_s": 162.9
+  },
+  {
+    "prompt": "Create an e-commerce store with products, cart, and checkout.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 11,
+    "time_s": 188.7
+  },
+  {
+    "prompt": "Build a project management tool with tasks, teams, and deadlines.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 2,
+    "time_s": 131.3
+  },
+  {
+    "prompt": "Create a booking system for a clinic with appointments and doctors.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 3,
+    "time_s": 143.1
+  },
+  {
+    "prompt": "Build a school management system with students, courses, and grades.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 0,
+    "time_s": 175.5
+  },
+  {
+    "prompt": "Create a food delivery app with restaurants, menus, and orders.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 1,
+    "time_s": 231.3
+  },
+  {
+    "prompt": "Build a job board with listings, applications, and employer profiles.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 12,
+    "time_s": 200.0
+  },
+  {
+    "prompt": "Create a social media app with posts, likes, follows, and messaging.",
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 0,
+    "time_s": 168.7
+  }
+]

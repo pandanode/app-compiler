@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>App Compiler</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: monospace; background: #0f0f0f; color: #e0e0e0; padding: 32px; max-width: 900px; margin: 0 auto; }
+  h1 { color: #a78bfa; margin-bottom: 4px; font-size: 28px; }
+  .subtitle { color: #666; margin-bottom: 28px; font-size: 13px; }
+  textarea { width: 100%; height: 110px; background: #1a1a1a; border: 1px solid #333;
+             color: #e0e0e0; padding: 14px; font-size: 14px; border-radius: 8px; resize: vertical; }
+  button { margin-top: 12px; padding: 11px 32px; background: #7c3aed; color: white;
+           border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-family: monospace; }
+  button:disabled { background: #4c1d95; cursor: not-allowed; opacity: 0.7; }
+  button:hover:not(:disabled) { background: #6d28d9; }
+
+  #status-box { margin-top: 20px; padding: 14px 16px; border-radius: 8px;
+                background: #1a1a1a; border: 1px solid #333; display: none; }
+  .stage { display: flex; align-items: center; gap: 10px; padding: 6px 0;
+           font-size: 13px; color: #888; border-bottom: 1px solid #222; }
+  .stage:last-child { border-bottom: none; }
+  .stage-icon { width: 18px; text-align: center; }
+  .stage.done { color: #4ade80; }
+  .stage.running { color: #a78bfa; }
+  .stage.waiting { color: #444; }
+  .spinner { display: inline-block; animation: spin 1s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  #result-box { margin-top: 16px; display: none; }
+  .result-header { display: flex; justify-content: space-between; align-items: center;
+                   padding: 10px 16px; background: #1a1a1a; border: 1px solid #333;
+                   border-radius: 8px 8px 0 0; font-size: 13px; }
+  .pass { color: #4ade80; font-weight: bold; }
+  .fail { color: #f87171; font-weight: bold; }
+  #output { background: #111; border: 1px solid #333; border-top: none;
+            padding: 16px; border-radius: 0 0 8px 8px; white-space: pre-wrap;
+            font-size: 11px; max-height: 500px; overflow-y: auto; color: #ccc; }
+
+  .timer { color: #666; font-size: 12px; margin-top: 8px; }
+  .warning-count { color: #fbbf24; }
+  .error-msg { color: #f87171; padding: 12px; background: #1a1a1a;
+               border: 1px solid #333; border-radius: 8px; margin-top: 16px; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h1>🤖 App Compiler</h1>
+  <p class="subtitle">Natural language → 4-stage pipeline → validated app schema (DB + API + UI + Auth)</p>
+
+  <textarea id="prompt" placeholder="Build a CRM with login, contacts, dashboard, role-based access and payments..."></textarea>
+  <br>
+  <button id="btn" onclick="compile()">Compile →</button>
+
+  <div id="status-box">
+    <div class="stage waiting" id="s1"><span class="stage-icon">○</span> Stage 1 — Intent extraction</div>
+    <div class="stage waiting" id="s2"><span class="stage-icon">○</span> Stage 2 — System design</div>
+    <div class="stage waiting" id="s3"><span class="stage-icon">○</span> Stage 3 — Schema generation (DB + API + UI + Auth)</div>
+    <div class="stage waiting" id="s4"><span class="stage-icon">○</span> Stage 4 — Cross-layer validation</div>
+    <div class="timer" id="timer">Elapsed: 0s</div>
+  </div>
+
+  <div id="error-box"></div>
+  <div id="result-box">
+    <div class="result-header">
+      <span>Output — <span id="val-status"></span></span>
+      <span id="meta"></span>
+    </div>
+    <pre id="output"></pre>
+  </div>
+
+<script>
+  let timerInterval = null;
+  let startTime = null;
+
+  function setStage(n, state) {
+    const icons = { done: "✓", running: "◉", waiting: "○" };
+    const el = document.getElementById("s" + n);
+    el.className = "stage " + state;
+    el.querySelector(".stage-icon").textContent = state === "running"
+      ? "◌" : icons[state];
+  }
+
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      const s = Math.round((Date.now() - startTime) / 1000);
+      document.getElementById("timer").textContent = `Elapsed: ${s}s`;
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  async function compile() {
+    const prompt = document.getElementById("prompt").value.trim();
+    if (!prompt) return;
+
+    // Reset UI
+    document.getElementById("btn").disabled = true;
+    document.getElementById("btn").textContent = "Compiling...";
+    document.getElementById("status-box").style.display = "block";
+    document.getElementById("result-box").style.display = "none";
+    document.getElementById("error-box").innerHTML = "";
+    [1,2,3,4].forEach(n => setStage(n, "waiting"));
+    setStage(1, "running");
+    startTimer();
+
+    // Animate stages based on time estimates
+    const stageTimers = [
+      setTimeout(() => { setStage(1,"done"); setStage(2,"running"); }, 15000),
+      setTimeout(() => { setStage(2,"done"); setStage(3,"running"); }, 30000),
+      setTimeout(() => { setStage(3,"done"); setStage(4,"running"); }, 120000),
+    ];
+
+    try {
+      const res = await fetch("/compile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+        signal: AbortSignal.timeout(600000)  // 10 min timeout
+      });
+
+      stageTimers.forEach(t => clearTimeout(t));
+      stopTimer();
+
+      const data = await res.json();
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
+
+      [1,2,3,4].forEach(n => setStage(n, "done"));
+      document.getElementById("timer").textContent = `Completed in ${elapsed}s`;
+
+      if (data.status === "success") {
+        const valStatus = data.validation?.status;
+        const errors = data.validation?.errors?.length || 0;
+        const warnings = data.validation?.warnings?.length || 0;
+
+        document.getElementById("val-status").innerHTML =
+          valStatus === "PASS"
+            ? `<span class="pass">✓ PASS</span>`
+            : `<span class="fail">✗ FAIL</span>`;
+
+        document.getElementById("meta").innerHTML =
+          `retries: ${data.retries} | ` +
+          `errors: <span class="${errors > 0 ? 'fail' : 'pass'}">${errors}</span> | ` +
+          `warnings: <span class="warning-count">${warnings}</span> | ` +
+          `${elapsed}s`;
+
+        document.getElementById("result-box").style.display = "block";
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      } else {
+        document.getElementById("error-box").innerHTML =
+          `<div class="error-msg">❌ Error: ${data.message}</div>`;
+      }
+
+    } catch (e) {
+      stageTimers.forEach(t => clearTimeout(t));
+      stopTimer();
+      [1,2,3,4].forEach(n => setStage(n, "waiting"));
+      document.getElementById("error-box").innerHTML =
+        `<div class="error-msg">❌ ${e.name === "TimeoutError" ? "Request timed out — try again" : e.message}</div>`;
+    } finally {
+      document.getElementById("btn").disabled = false;
+      document.getElementById("btn").textContent = "Compile →";
+    }
+  }
+</script>
+</body>
+</html>
