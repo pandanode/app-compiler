@@ -3,6 +3,8 @@
 > **Turn a one-line description into a fully validated, production-ready app specification in minutes.**
 > Built as a demonstration of LLM orchestration, schema enforcement, and intelligent repair systems.
 
+🚀 **[Live Demo → app-compiler-topaz.vercel.app](https://app-compiler-topaz.vercel.app/)**
+
 ---
 
 ## What is this?
